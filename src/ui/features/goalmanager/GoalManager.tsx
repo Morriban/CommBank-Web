@@ -44,6 +44,8 @@ export function GoalManager(props: Props) {
 
   const hasIcon = () => icon != null
 
+  const goal = useAppSelector(selectGoalsMap)[props.goal.id]
+
   const addIconOnClick = (event: React.MouseEvent) => {
     event.stopPropagation()
     setEmojiPickerIsOpen(true)
@@ -126,6 +128,10 @@ export function GoalManager(props: Props) {
         <AddIconButtonText>Add icon</AddIconButtonText>
       </TransparentButton>
     </AddIconButtonContainer>
+
+    <GoalIconContainer shouldShow={hasIcon()}>
+      <GoalIcon icon={goal.icon} onClick={addIconOnClick} />
+    </GoalIconContainer>
   )
 }
 
@@ -133,6 +139,10 @@ type FieldProps = { name: string; icon: IconDefinition }
 type AddIconButtonContainerProps = { shouldShow: boolean }
 type GoalIconContainerProps = { shouldShow: boolean }
 type EmojiPickerContainerProps = { isOpen: boolean; hasIcon: boolean }
+
+const GoalIconContainer = styled.div<GoalIconContainerProps>`
+  display: ${(props) => (props.shouldShow ? 'flex' : 'none')};
+`
 
 const Field = (props: FieldProps) => (
   <FieldContainer>
