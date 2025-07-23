@@ -13,11 +13,15 @@ import DatePicker from '../../components/DatePicker'
 import { Theme } from '../../components/Theme'
 
 type Props = { goal: Goal }
+type EmojiPickerContainerProps = { isOpen: boolean; hasIcon: boolean }
+
 export function GoalManager(props: Props) {
   const dispatch = useAppDispatch()
 
   const goal = useAppSelector(selectGoalsMap)[props.goal.id]
 
+  const [emojiPickerIsOpen, setEmojiPickerIsOpen] = useState(false)
+  
   const [name, setName] = useState<string | null>(null)
   const [targetDate, setTargetDate] = useState<Date | null>(null)
   const [targetAmount, setTargetAmount] = useState<number | null>(null)
@@ -49,6 +53,25 @@ export function GoalManager(props: Props) {
   const addIconOnClick = (event: React.MouseEvent) => {
     event.stopPropagation()
     setEmojiPickerIsOpen(true)
+  }
+
+  const pickEmojiOnClick = (emoji: BaseEmoji, event: MouseEvent) => {
+      event.stopPropagation()
+  
+    setIcon(emoji.native)
+    setEmojiPickerIsOpen(false)
+  
+    const updatedGoal: Goal = {
+      ...props.goal,
+      icon: emoji.native ?? props.goal.icon,
+      name: name ?? props.goal.name,
+      targetDate: targetDate ?? props.goal.targetDate,
+      targetAmount: targetAmount ?? props.goal.targetAmount,
+    }
+
+    dispatch(updateGoalRedux(updatedGoal))
+
+    // TODO(update database)
   }
 
   const updateNameOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +165,13 @@ type EmojiPickerContainerProps = { isOpen: boolean; hasIcon: boolean }
 
 const GoalIconContainer = styled.div<GoalIconContainerProps>`
   display: ${(props) => (props.shouldShow ? 'flex' : 'none')};
+`
+
+const EmojiPickerContainer = styled.div<EmojiPickerContainerProps>`
+  display: ${(props) => (props.isOpen ? 'flex' : 'none')};
+  position: absolute;
+  top: ${(props) => (props.hasIcon ? '10rem' : '2rem')};
+  left: 0;
 `
 
 const Field = (props: FieldProps) => (
